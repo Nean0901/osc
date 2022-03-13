@@ -45,5 +45,5 @@ class OSCMessage {
   List<int> toBytes() => _builder.toBytes();
 
   @override
-  String toString() => 'OSCMesssage($address, args: $arguments)';
+  String toString() => 'OSCMessage($address, args: $arguments)';
 }
