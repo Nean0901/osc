@@ -3,5 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 export 'package:osc/src/convert.dart' show DataCodec;
-export 'package:osc/src/io.dart' show OSCSocket;
+export 'package:osc/src/UDP.dart' show OSCUDPSocket;
+export 'package:osc/src/TCP.dart' show OSCTCPSocket;
 export 'package:osc/src/message.dart' show OSCMessage;

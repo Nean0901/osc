@@ -6,7 +6,7 @@ import 'dart:io';
 
 import '../osc.dart';
 
-class OSCSocket {
+class OSCUDPSocket {
   final InternetAddress? destination;
   final int? destinationPort;
 
@@ -18,7 +18,7 @@ class OSCSocket {
 
   RawDatagramSocket? _socket;
 
-  OSCSocket({
+  OSCUDPSocket({
     this.destination,
     this.destinationPort,
     this.serverAddress,
