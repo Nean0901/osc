@@ -191,6 +191,40 @@ class FloatEncoder extends DataEncoder<double> {
   }
 }
 
+class ImpulseCodec extends DataCodec<String> {
+  const ImpulseCodec() : super(typeTag: 'T');
+
+  @override
+  Converter<List<int>, String> get decoder => const ImpulseDecoder();
+
+  @override
+  Converter<String, List<int>> get encoder => const ImpulseEncoder();
+
+  @override
+  int length(String string) => string.length;
+
+  @override
+  String toValue(String string) => string;
+}
+
+class ImpulseDecoder extends DataDecoder<String> {
+  const ImpulseDecoder();
+
+  @override
+  String convert(List<int> input) {
+    return 'Impulse';
+  }
+}
+
+class ImpulseEncoder extends DataEncoder<String> {
+  const ImpulseEncoder();
+
+  @override
+  List<int> convert(String input) {
+    return List<int>.empty();
+  }
+}
+
 class IntCodec extends DataCodec<int> {
   const IntCodec() : super(typeTag: 'i');
 
