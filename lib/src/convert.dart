@@ -3,8 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:ffi';
-import 'dart:html';
+//import 'dart:ffi';
+//import 'dart:html';
 import 'dart:typed_data';
 
 import 'message.dart';
@@ -404,7 +404,7 @@ class TrueDecoder extends DataDecoder<String> {
 
   @override
   String convert(List<int> input) {
-    return 'False';
+    return 'True';
   }
 }
 
