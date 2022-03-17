@@ -3,25 +3,45 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:io';
+import 'dart:ffi';
+import 'dart:html';
 import 'dart:typed_data';
 
 import 'message.dart';
 
 const BlobCodec blobCodec = BlobCodec();
 
+const FalseCodec falseCodec = FalseCodec();
+
 const FloatCodec floatCodec = FloatCodec();
 
+const ImpulseCodec impulseCodec = ImpulseCodec();
+
 const IntCodec intCodec = IntCodec();
+
+const NullCodec nullCodec = NullCodec();
 
 const OSCMessageCodec oscMessageCodec = OSCMessageCodec();
 
 const StringCodec stringCodec = StringCodec();
 
+const TimetagCodec timetagCodec = TimetagCodec();
+
+const TrueCodec trueCodec = TrueCodec();
+
 abstract class DataCodec<T> extends Codec<T, List<int>> {
   static final List<DataCodec<Object>> codecs =
-      List<DataCodec<Object>>.unmodifiable(
-          <DataCodec<Object>>[blobCodec, intCodec, floatCodec, stringCodec]);
+      List<DataCodec<Object>>.unmodifiable(<DataCodec<Object>>[
+    blobCodec,
+    falseCodec,
+    floatCodec,
+    impulseCodec,
+    intCodec,
+    nullCodec,
+    stringCodec,
+    timetagCodec,
+    trueCodec
+  ]);
 
   final String typeTag;
 
@@ -95,6 +115,40 @@ class BlobEncoder extends DataEncoder<Uint8List> {
     final retval = list.toList();
     retval.addAll(value);
     return retval;
+  }
+}
+
+class FalseCodec extends DataCodec<String> {
+  const FalseCodec() : super(typeTag: 'F');
+
+  @override
+  Converter<List<int>, String> get decoder => const FalseDecoder();
+
+  @override
+  Converter<String, List<int>> get encoder => const FalseEncoder();
+
+  @override
+  int length(String string) => string.length;
+
+  @override
+  String toValue(String string) => string;
+}
+
+class FalseDecoder extends DataDecoder<String> {
+  const FalseDecoder();
+
+  @override
+  String convert(List<int> input) {
+    return 'False';
+  }
+}
+
+class FalseEncoder extends DataEncoder<String> {
+  const FalseEncoder();
+
+  @override
+  List<int> convert(String input) {
+    return List<int>.empty();
   }
 }
 
@@ -219,6 +273,40 @@ class StringEncoder extends DataEncoder<String> {
     bytes.addAll(List.generate(pad, (i) => 0));
 
     return bytes;
+  }
+}
+
+class TrueCodec extends DataCodec<String> {
+  const TrueCodec() : super(typeTag: 'T');
+
+  @override
+  Converter<List<int>, String> get decoder => const TrueDecoder();
+
+  @override
+  Converter<String, List<int>> get encoder => const FalseEncoder();
+
+  @override
+  int length(String string) => string.length;
+
+  @override
+  String toValue(String string) => string;
+}
+
+class TrueDecoder extends DataDecoder<String> {
+  const TrueDecoder();
+
+  @override
+  String convert(List<int> input) {
+    return 'False';
+  }
+}
+
+class TrueEncoder extends DataEncoder<String> {
+  const TrueEncoder();
+
+  @override
+  List<int> convert(String input) {
+    return List<int>.empty();
   }
 }
 
