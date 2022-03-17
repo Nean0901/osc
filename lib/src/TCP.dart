@@ -52,6 +52,7 @@ class OSCTCPSocket {
           strippedData[i] = dataList.sublist(1, dataList.indexOf(192, 2));
           dataList.removeRange(0, dataList.indexOf(192, 2) + 1);
           var msg = OSCMessage.fromBytes(strippedData[i]);
+          print(msg);
           onData(msg);
         }
       },
