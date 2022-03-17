@@ -192,7 +192,7 @@ class FloatEncoder extends DataEncoder<double> {
 }
 
 class ImpulseCodec extends DataCodec<String> {
-  const ImpulseCodec() : super(typeTag: 'T');
+  const ImpulseCodec() : super(typeTag: 'I');
 
   @override
   Converter<List<int>, String> get decoder => const ImpulseDecoder();
@@ -264,6 +264,40 @@ class IntEncoder extends DataEncoder<int> {
   }
 }
 
+class NullCodec extends DataCodec<String> {
+  const NullCodec() : super(typeTag: 'N');
+
+  @override
+  Converter<List<int>, String> get decoder => const NullDecoder();
+
+  @override
+  Converter<String, List<int>> get encoder => const NullEncoder();
+
+  @override
+  int length(String string) => string.length;
+
+  @override
+  String toValue(String string) => string;
+}
+
+class NullDecoder extends DataDecoder<String> {
+  const NullDecoder();
+
+  @override
+  String convert(List<int> input) {
+    return 'Null';
+  }
+}
+
+class NullEncoder extends DataEncoder<String> {
+  const NullEncoder();
+
+  @override
+  List<int> convert(String input) {
+    return List<int>.empty();
+  }
+}
+
 class StringCodec extends DataCodec<String> {
   const StringCodec() : super(typeTag: 's');
 
@@ -307,6 +341,45 @@ class StringEncoder extends DataEncoder<String> {
     bytes.addAll(List.generate(pad, (i) => 0));
 
     return bytes;
+  }
+}
+
+class TimetagCodec extends DataCodec<int> {
+  const TimetagCodec() : super(typeTag: 't');
+
+  @override
+  Converter<List<int>, int> get decoder => const TimetagDecoder();
+
+  @override
+  Converter<int, List<int>> get encoder => const TimetagEncoder();
+
+  @override
+  int length(int value) => 8;
+
+  @override
+  int toValue(String string) => int.parse(string);
+}
+
+class TimetagDecoder extends DataDecoder<int> {
+  const TimetagDecoder();
+
+  @override
+  int convert(List<int> value) {
+    final buffer = Uint8List.fromList(value).buffer;
+    final byteData = ByteData.view(buffer);
+    return byteData.getInt64(0);
+  }
+}
+
+class TimetagEncoder extends DataEncoder<int> {
+  const TimetagEncoder();
+
+  @override
+  List<int> convert(int value) {
+    final list = Uint8List(8);
+    final byteData = ByteData.view(list.buffer);
+    byteData.setInt64(0, value);
+    return list;
   }
 }
 
