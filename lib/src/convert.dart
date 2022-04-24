@@ -524,10 +524,25 @@ class OSCMessageParser {
       final codecs =
           typeTagBytes.map((b) => DataCodec.forType(asString(<int>[b])));
       for (var codec in codecs) {
-        final value = codec.decode(input.sublist(index));
-        args.add(value);
-
-        index += codec.length(value);
+        switch (codec) {
+          case trueCodec:
+            args.add(true);
+            break;
+          case falseCodec:
+            args.add(false);
+            break;
+          case impulseCodec:
+            args.add("impulse");
+            break;
+          case nullCodec:
+            args.add("null");
+            break;
+          default:
+            final value = codec.decode(input.sublist(index));
+            args.add(value);
+            index += codec.length(value);
+        }
+        //index += codec.length(value);
         // if (value is String) eat(byte: 0);
         align();
       }
