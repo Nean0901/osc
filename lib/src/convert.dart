@@ -526,10 +526,10 @@ class OSCMessageParser {
       for (var codec in codecs) {
         switch (codec) {
           case trueCodec:
-            args.add(true);
+            args.add("true");
             break;
           case falseCodec:
-            args.add(false);
+            args.add("false");
             break;
           case impulseCodec:
             args.add("impulse");
