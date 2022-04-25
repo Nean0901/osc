@@ -128,10 +128,10 @@ class FalseCodec extends DataCodec<String> {
   Converter<String, List<int>> get encoder => const FalseEncoder();
 
   @override
-  int length(String string) => string.length;
+  int length(String string) => 0;
 
   @override
-  String toValue(String string) => string;
+  String toValue(String string) => "";
 }
 
 class FalseDecoder extends DataDecoder<String> {
@@ -319,10 +319,18 @@ class StringDecoder extends DataDecoder<String> {
 
   @override
   String convert(List<int> input) {
+    //TODO Add Handling as strings have to be multiples of 32 Bits - need to handle at least 4 nulls afterwards
     final nextNull = input.indexOf(0);
+    //print(input);
+    //print(nextNull);
     if (nextNull == -1) {
+      //print(utf8.decode(input));
       return utf8.decode(input);
     } else {
+      //print("String Decode");
+      //print(input);
+      //print(utf8.decode(input.sublist(0, nextNull)));
+      //print(input);
       return utf8.decode(input.sublist(0, nextNull));
     }
   }
@@ -393,7 +401,7 @@ class TrueCodec extends DataCodec<String> {
   Converter<String, List<int>> get encoder => const FalseEncoder();
 
   @override
-  int length(String string) => string.length;
+  int length(String string) => 0;
 
   @override
   String toValue(String string) => string;
@@ -493,10 +501,14 @@ class OSCMessageParser {
     if (input[index++] != stringCodec.encode(char)[0]) {
       //TODO: throw
     }
+    //index = input.indexWhere((c) => c == stringCodec.encode(char)[0]);
+    //print(stringCodec.encode(char)[0]);
   }
 
   void align() {
+    //print(index);
     index += (4 - index % 4) % 4;
+    //print(index);
   }
 
   String asString(List<int> bytes) => stringCodec.decode(bytes);
@@ -508,29 +520,37 @@ class OSCMessageParser {
   }
 
   OSCMessage parse() {
-    final addressBytes = takeUntil(byte: 0);
-    final address = asString(addressBytes);
+    final addressBytes = takeUntil(byte: 0); //Extract address bytes
+    final address = asString(addressBytes); //Convet to String
+    //ADDRESS PARSING DONE
+    //print("input");
+    //print(input);
+    //print("address");
+    //print(addressBytes);
 
-    eat(byte: 0);
-    align();
+    eat(byte: 0); //Doesn't do anything
+    align(); //
 
     advance(char: ',');
     final args = <Object>[];
-    final typeTagBytes = takeUntil(byte: 0);
+    final typeTagBytes = takeUntil(byte: 0); //Gets all the type tags
+    //print(utf8.decode(typeTagBytes));
     if (typeTagBytes.isNotEmpty) {
       eat(byte: 0);
       align();
 
-      final codecs =
-          typeTagBytes.map((b) => DataCodec.forType(asString(<int>[b])));
+      final codecs = typeTagBytes.map((b) =>
+          DataCodec.forType(asString(<int>[b]))); //Maps the codecs to the bytes
+
       for (var codec in codecs) {
+        //print(codec);
         switch (codec) {
           case trueCodec:
             //TODO Find a way to get args to accept a bool
-            args.add(true);
+            args.add("true");
             break;
           case falseCodec:
-            args.add(false);
+            args.add("false");
             break;
           case impulseCodec:
             args.add("impulse");
@@ -538,13 +558,31 @@ class OSCMessageParser {
           case nullCodec:
             args.add("null");
             break;
+          case stringCodec:
+            final value = codec.decode(input.sublist(index));
+            args.add(value);
+            index += codec.length(value);
+            if (codec.length(value) % 4 != 1) {
+              index += 4;
+            }
+            align();
+            //print("value");
+            //print(value);
+            break;
           default:
             final value = codec.decode(input.sublist(index));
             args.add(value);
             index += codec.length(value);
+            //print("value");
+            //print(value);
+            //if (value is String) eat(byte: 0);
+            align();
         }
-        //index += codec.length(value);
-        // if (value is String) eat(byte: 0);
+        //
+        /*final value = codec.decode(input.sublist(index));
+        args.add(value);
+        print(args);
+        index += codec.length(value);*/
         align();
       }
     }
